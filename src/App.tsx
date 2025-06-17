@@ -22,11 +22,13 @@ function AnalyzePage() {
   const [analysis, setAnalysis] = useState<PaperAnalysis | null>(null);
   const [paperTitle, setPaperTitle] = useState<string>('');
   const [paperDoi, setPaperDoi] = useState<string | undefined>();
+  const [currentAnalysisAcademicLevel, setCurrentAnalysisAcademicLevel] = useState<string>('');
   const [analysisState, setAnalysisState] = useState<AnalysisState>({
     isProcessing: false,
     progress: 0,
     currentStep: '',
   });
+  const [formKey, setFormKey] = useState<number>(0); // Add key to force form re-render
 
   const handleAnalyze = async (data: { 
     type: 'doi' | 'abstract' | 'pdf'; 
@@ -35,6 +37,9 @@ function AnalyzePage() {
     academicLevel: string;
   }) => {
     if (!user) return;
+
+    // Store the academic level used for this analysis
+    setCurrentAnalysisAcademicLevel(data.academicLevel);
 
     setAnalysisState({
       isProcessing: true,
@@ -119,14 +124,18 @@ function AnalyzePage() {
   };
 
   const handleNewAnalysis = () => {
+    // Reset all analysis-related state
     setAnalysis(null);
     setPaperTitle('');
     setPaperDoi(undefined);
+    setCurrentAnalysisAcademicLevel('');
     setAnalysisState({
       isProcessing: false,
       progress: 0,
       currentStep: '',
     });
+    // Force form to re-render with fresh state by updating key
+    setFormKey(prev => prev + 1);
   };
 
   if (analysisState.isProcessing) {
@@ -172,12 +181,16 @@ function AnalyzePage() {
           <AnalysisDisplay
             analysis={analysis}
             paperTitle={paperTitle}
-            academicLevel={user!.academic_level}
+            academicLevel={currentAnalysisAcademicLevel || user!.academic_level}
             doi={paperDoi}
           />
         </div>
       ) : (
-        <InputForm onSubmit={handleAnalyze} loading={analysisState.isProcessing} />
+        <InputForm 
+          key={formKey} // Force re-render when key changes
+          onSubmit={handleAnalyze} 
+          loading={analysisState.isProcessing} 
+        />
       )}
     </main>
   );
