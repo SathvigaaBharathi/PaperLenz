@@ -12,7 +12,6 @@ import { Dashboard } from './components/Dashboard';
 import { AnalysisView } from './components/AnalysisView';
 import { Footer } from './components/Footer';
 import { ChatAssistant } from './components/ChatAssistant';
-import { FloatingBoltLogo } from './components/FloatingBoltLogo';
 import { analyzePaperWithEdgeFunction, analyzePaperDirect } from './lib/edgeFunction';
 import { supabase } from './lib/supabase';
 import { PaperAnalysis, AnalysisState } from './types';
@@ -254,7 +253,6 @@ function AppContent() {
       </main>
       <Footer />
       <ChatAssistant />
-      <FloatingBoltLogo />
     </div>
   );
 }
