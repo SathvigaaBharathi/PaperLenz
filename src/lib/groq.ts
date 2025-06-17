@@ -35,10 +35,10 @@ export async function analyzePaper(
   }
 
   const levelPrompts = {
-    high_school: 'Explain this scientific paper in simple terms suitable for high school students. Use basic vocabulary and clear examples.',
-    undergraduate: 'Analyze this paper for undergraduate students. Use appropriate scientific terminology with explanations.',
-    graduate: 'Provide a comprehensive analysis suitable for graduate students. Include technical details and research methodology insights.',
-    professor: 'Deliver a thorough academic analysis for professors and researchers. Include critical evaluation and research implications.'
+    high_school: 'Explain this scientific paper in simple, concise terms suitable for high school students. Use basic vocabulary, clear examples, and avoid complex jargon. Keep explanations brief and focused on the main points.',
+    undergraduate: 'Analyze this paper for undergraduate students with detailed explanations of scientific concepts and methodology. Use appropriate scientific terminology with clear explanations. Provide comprehensive insights into research methods, data interpretation, and implications. Include technical details that help students understand the research process and significance.',
+    graduate: 'Provide a thorough, detailed analysis suitable for graduate students. Include comprehensive technical details, critical evaluation of research methodology, in-depth discussion of statistical approaches, and detailed assessment of study limitations. Offer extensive insights into research implications, theoretical frameworks, and connections to broader scientific literature.',
+    professor: 'Deliver an exhaustive academic analysis for professors and researchers with extensive critical evaluation and detailed technical insights. Provide comprehensive assessment of methodology rigor, statistical validity, theoretical contributions, and research implications. Include detailed critique of experimental design, data analysis approaches, and thorough evaluation of the study\'s contribution to the field.'
   };
 
   const prompt = `${levelPrompts[academicLevel]}
