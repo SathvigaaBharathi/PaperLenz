@@ -12,6 +12,7 @@ import { Dashboard } from './components/Dashboard';
 import { AnalysisView } from './components/AnalysisView';
 import { Footer } from './components/Footer';
 import { ChatAssistant } from './components/ChatAssistant';
+import { FloatingBoltLogo } from './components/FloatingBoltLogo';
 import { analyzePaperWithEdgeFunction, analyzePaperDirect } from './lib/edgeFunction';
 import { supabase } from './lib/supabase';
 import { PaperAnalysis, AnalysisState } from './types';
@@ -22,13 +23,12 @@ function AnalyzePage() {
   const [analysis, setAnalysis] = useState<PaperAnalysis | null>(null);
   const [paperTitle, setPaperTitle] = useState<string>('');
   const [paperDoi, setPaperDoi] = useState<string | undefined>();
-  const [currentAnalysisAcademicLevel, setCurrentAnalysisAcademicLevel] = useState<string>('');
+  const [currentAcademicLevel, setCurrentAcademicLevel] = useState<string>('undergraduate');
   const [analysisState, setAnalysisState] = useState<AnalysisState>({
     isProcessing: false,
     progress: 0,
     currentStep: '',
   });
-  const [formKey, setFormKey] = useState<number>(0); // Add key to force form re-render
 
   const handleAnalyze = async (data: { 
     type: 'doi' | 'abstract' | 'pdf'; 
@@ -39,12 +39,13 @@ function AnalyzePage() {
     if (!user) return;
 
     // Store the academic level used for this analysis
-    setCurrentAnalysisAcademicLevel(data.academicLevel);
+    setCurrentAcademicLevel(data.academicLevel);
 
     setAnalysisState({
       isProcessing: true,
       progress: 10,
       currentStep: 'Parsing document',
+      error: undefined, // Clear any previous errors
     });
 
     try {
@@ -83,7 +84,7 @@ function AnalyzePage() {
         result = await analyzePaperDirect(content, data.academicLevel, title, data.type);
       }
       
-      // Save to database
+      // Save to database with the selected academic level
       const { error: insertError } = await supabase
         .from('papers')
         .insert([
@@ -93,7 +94,7 @@ function AnalyzePage() {
             doi: data.type === 'doi' ? data.content : paperDoi,
             abstract: data.type === 'abstract' ? data.content : null,
             input_type: data.type,
-            academic_level: data.academicLevel,
+            academic_level: data.academicLevel, // Use the selected academic level
             analysis: result,
           }
         ]);
@@ -111,6 +112,7 @@ function AnalyzePage() {
         isProcessing: false,
         progress: 100,
         currentStep: 'Complete',
+        error: undefined,
       });
     } catch (error: any) {
       console.error('Analysis error:', error);
@@ -128,20 +130,21 @@ function AnalyzePage() {
     setAnalysis(null);
     setPaperTitle('');
     setPaperDoi(undefined);
-    setCurrentAnalysisAcademicLevel('');
+    setCurrentAcademicLevel('undergraduate');
     setAnalysisState({
       isProcessing: false,
       progress: 0,
       currentStep: '',
+      error: undefined, // Clear any errors
     });
-    // Force form to re-render with fresh state by updating key
-    setFormKey(prev => prev + 1);
   };
 
+  // Show loading spinner during processing
   if (analysisState.isProcessing) {
     return <LoadingSpinner state={analysisState} />;
   }
 
+  // Show error state
   if (analysisState.error) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
@@ -166,6 +169,7 @@ function AnalyzePage() {
     );
   }
 
+  // Show analysis results or input form
   return (
     <main className="py-8 px-4 sm:px-6 lg:px-8">
       {analysis ? (
@@ -181,15 +185,15 @@ function AnalyzePage() {
           <AnalysisDisplay
             analysis={analysis}
             paperTitle={paperTitle}
-            academicLevel={currentAnalysisAcademicLevel || user!.academic_level}
+            academicLevel={currentAcademicLevel as any} // Use the selected academic level
             doi={paperDoi}
           />
         </div>
       ) : (
         <InputForm 
-          key={formKey} // Force re-render when key changes
           onSubmit={handleAnalyze} 
-          loading={analysisState.isProcessing} 
+          loading={analysisState.isProcessing}
+          key="input-form" // Force re-render to reset form state
         />
       )}
     </main>
@@ -250,6 +254,7 @@ function AppContent() {
       </main>
       <Footer />
       <ChatAssistant />
+      <FloatingBoltLogo />
     </div>
   );
 }
