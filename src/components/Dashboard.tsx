@@ -13,7 +13,8 @@ import {
   TrendingUp,
   Clock,
   Star,
-  Edit3
+  Edit3,
+  AlertTriangle
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { supabase } from '../lib/supabase';
@@ -42,6 +43,10 @@ export function Dashboard() {
   const [selectedPaper, setSelectedPaper] = useState<PaperHistory | null>(null);
   const [showNotesModal, setShowNotesModal] = useState(false);
   const [notes, setNotes] = useState('');
+  
+  // Delete confirmation modal state
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [paperToDelete, setPaperToDelete] = useState<PaperHistory | null>(null);
 
   useEffect(() => {
     if (user) {
@@ -104,16 +109,21 @@ export function Dashboard() {
     }
   };
 
-  const handleDeletePaper = async (paperId: string) => {
-    if (!confirm('Are you sure you want to delete this paper? This action cannot be undone.')) {
-      return;
-    }
+  // Open delete confirmation modal
+  const handleDeletePaper = (paper: PaperHistory) => {
+    setPaperToDelete(paper);
+    setShowDeleteModal(true);
+  };
+
+  // Confirm and execute deletion
+  const confirmDelete = async () => {
+    if (!paperToDelete) return;
 
     try {
       const { error } = await supabase
         .from('papers')
         .delete()
-        .eq('id', paperId)
+        .eq('id', paperToDelete.id)
         .eq('user_id', user!.id);
 
       if (error) {
@@ -122,12 +132,21 @@ export function Dashboard() {
         return;
       }
 
-      setPapers(prev => prev.filter(paper => paper.id !== paperId));
+      setPapers(prev => prev.filter(paper => paper.id !== paperToDelete.id));
       toast.success('Paper deleted successfully');
     } catch (err) {
       console.error('Error deleting paper:', err);
       toast.error('Failed to delete paper');
+    } finally {
+      setShowDeleteModal(false);
+      setPaperToDelete(null);
     }
+  };
+
+  // Cancel deletion
+  const cancelDelete = () => {
+    setShowDeleteModal(false);
+    setPaperToDelete(null);
   };
 
   const handleViewPaper = (paperId: string) => {
@@ -355,7 +374,7 @@ export function Dashboard() {
                           </div>
                         </div>
                         <p className="text-gray-600 text-sm line-clamp-2">
-                          {paper.analysis.simplified_summary}
+                          {paper.analysis.one_line_summary}
                         </p>
                         {paper.notes && (
                           <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
@@ -394,7 +413,7 @@ export function Dashboard() {
                       <span className="text-sm">PDF</span>
                     </button>
                     <button
-                      onClick={() => handleDeletePaper(paper.id)}
+                      onClick={() => handleDeletePaper(paper)}
                       className="flex items-center space-x-1 px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
                       title="Delete Paper"
                     >
@@ -434,6 +453,50 @@ export function Dashboard() {
               </button>
               <button
                 onClick={() => setShowNotesModal(false)}
+                className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Custom Delete Confirmation Modal */}
+      {showDeleteModal && paperToDelete && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-50">
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-gray-200">
+            <div className="flex items-center space-x-3 mb-4">
+              <div className="bg-red-100 p-3 rounded-xl">
+                <AlertTriangle className="h-6 w-6 text-red-600" />
+              </div>
+              <h3 className="text-lg font-semibold text-gray-900">
+                Delete Paper
+              </h3>
+            </div>
+            
+            <p className="text-gray-600 mb-4">
+              Are you sure you want to delete this paper? This action cannot be undone.
+            </p>
+            
+            <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-6">
+              <p className="text-sm font-medium text-gray-900 line-clamp-2">
+                {paperToDelete.title}
+              </p>
+              <p className="text-xs text-gray-500 mt-1">
+                Created: {new Date(paperToDelete.created_at).toLocaleDateString()}
+              </p>
+            </div>
+            
+            <div className="flex space-x-3">
+              <button
+                onClick={confirmDelete}
+                className="flex-1 bg-red-600 text-white py-3 rounded-xl font-semibold hover:bg-red-700 transition-all"
+              >
+                Delete Paper
+              </button>
+              <button
+                onClick={cancelDelete}
                 className="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold hover:bg-gray-200 transition-all"
               >
                 Cancel
