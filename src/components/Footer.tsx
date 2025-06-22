@@ -1,4 +1,5 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
 import { Microscope, Linkedin, Github, Heart } from 'lucide-react';
 
 export function Footer() {
@@ -27,15 +28,15 @@ export function Footer() {
           <div className="space-y-4">
             <h4 className="text-lg font-semibold">Quick Links</h4>
             <div className="space-y-2">
-              <a href="/" className="block text-gray-400 hover:text-white transition-colors text-sm">
+              <Link to="/" className="block text-gray-400 hover:text-white transition-colors text-sm">
                 Home
-              </a>
-              <a href="/analyze" className="block text-gray-400 hover:text-white transition-colors text-sm">
+              </Link>
+              <Link to="/analyze" className="block text-gray-400 hover:text-white transition-colors text-sm">
                 Analyze Paper
-              </a>
-              <a href="/dashboard" className="block text-gray-400 hover:text-white transition-colors text-sm">
+              </Link>
+              <Link to="/dashboard" className="block text-gray-400 hover:text-white transition-colors text-sm">
                 Dashboard
-              </a>
+              </Link>
             </div>
           </div>
 

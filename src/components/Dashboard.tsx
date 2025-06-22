@@ -348,76 +348,77 @@ export function Dashboard() {
           filteredPapers.map((paper) => (
             <div key={paper.id} className="bg-white rounded-2xl shadow-lg border border-gray-200 overflow-hidden hover:shadow-xl transition-all duration-200">
               <div className="p-6">
-                <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between space-y-4 lg:space-y-0">
-                  <div className="flex-1">
-                    <div className="flex items-start space-x-4">
-                      <div className="bg-amber-100 p-3 rounded-xl flex-shrink-0">
-                        <FileText className="h-6 w-6 text-amber-900" />
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-gray-900 mb-2 line-clamp-2">
-                          {paper.title}
-                        </h3>
-                        <div className="flex flex-wrap items-center gap-3 mb-3">
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(paper.input_type)}`}>
-                            {paper.input_type.toUpperCase()}
-                          </span>
-                          <div className="flex items-center space-x-1 text-sm text-gray-600">
-                            <Calendar className="h-4 w-4" />
-                            <span>{new Date(paper.created_at).toLocaleDateString()}</span>
-                          </div>
-                          <div className="flex items-center space-x-1">
-                            <Star className="h-4 w-4 text-yellow-500" />
-                            <span className={`text-sm font-medium ${getCredibilityColor(paper.analysis.credibility_analysis.score)}`}>
-                              {paper.analysis.credibility_analysis.score}/100
-                            </span>
-                          </div>
+                <div className="flex flex-col space-y-4">
+                  {/* Main content area */}
+                  <div className="flex items-start space-x-4">
+                    <div className="bg-amber-100 p-3 rounded-xl flex-shrink-0">
+                      <FileText className="h-6 w-6 text-amber-900" />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-lg font-semibold text-gray-900 mb-2 break-words">
+                        {paper.title}
+                      </h3>
+                      <div className="flex flex-wrap items-center gap-3 mb-3">
+                        <span className={`px-3 py-1 rounded-full text-xs font-medium ${getTypeColor(paper.input_type)}`}>
+                          {paper.input_type.toUpperCase()}
+                        </span>
+                        <div className="flex items-center space-x-1 text-sm text-gray-600">
+                          <Calendar className="h-4 w-4" />
+                          <span>{new Date(paper.created_at).toLocaleDateString()}</span>
                         </div>
-                        <p className="text-gray-600 text-sm line-clamp-2">
-                          {paper.analysis.one_line_summary}
-                        </p>
-                        {paper.notes && (
-                          <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <p className="text-sm text-yellow-800 line-clamp-2">
-                              <strong>Notes:</strong> {paper.notes}
-                            </p>
-                          </div>
-                        )}
+                        <div className="flex items-center space-x-1">
+                          <Star className="h-4 w-4 text-yellow-500" />
+                          <span className={`text-sm font-medium ${getCredibilityColor(paper.analysis.credibility_analysis.score)}`}>
+                            {paper.analysis.credibility_analysis.score}/100
+                          </span>
+                        </div>
                       </div>
+                      <p className="text-gray-600 text-sm line-clamp-2 break-words">
+                        {paper.analysis.one_line_summary}
+                      </p>
+                      {paper.notes && (
+                        <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
+                          <p className="text-sm text-yellow-800 line-clamp-2 break-words">
+                            <strong>Notes:</strong> {paper.notes}
+                          </p>
+                        </div>
+                      )}
                     </div>
                   </div>
                   
-                  <div className="flex items-center space-x-2 lg:ml-6">
+                  {/* Action buttons - always visible on separate row for mobile */}
+                  <div className="flex flex-wrap items-center gap-2 pt-4 border-t border-gray-100">
                     <button
                       onClick={() => openNotesModal(paper)}
-                      className="flex items-center space-x-1 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all"
+                      className="flex items-center space-x-1 px-3 py-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-all text-sm"
                       title="Add/Edit Notes"
                     >
                       <Edit3 className="h-4 w-4" />
-                      <span className="text-sm">Notes</span>
+                      <span>Notes</span>
                     </button>
                     <button
                       onClick={() => handleViewPaper(paper.id)}
-                      className="flex items-center space-x-1 px-3 py-2 text-amber-900 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all"
+                      className="flex items-center space-x-1 px-3 py-2 text-amber-900 hover:text-amber-800 hover:bg-amber-50 rounded-lg transition-all text-sm"
                       title="View Analysis"
                     >
                       <Eye className="h-4 w-4" />
-                      <span className="text-sm">View</span>
+                      <span>View</span>
                     </button>
                     <button
                       onClick={() => handleDownloadPDF(paper)}
-                      className="flex items-center space-x-1 px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-all"
+                      className="flex items-center space-x-1 px-3 py-2 text-gray-600 hover:text-gray-800 hover:bg-gray-50 rounded-lg transition-all text-sm"
                       title="Download PDF"
                     >
                       <Download className="h-4 w-4" />
-                      <span className="text-sm">PDF</span>
+                      <span>PDF</span>
                     </button>
                     <button
                       onClick={() => handleDeletePaper(paper)}
-                      className="flex items-center space-x-1 px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all"
+                      className="flex items-center space-x-1 px-3 py-2 text-red-600 hover:text-red-700 hover:bg-red-50 rounded-lg transition-all text-sm"
                       title="Delete Paper"
                     >
                       <Trash2 className="h-4 w-4" />
+                      <span className="hidden sm:inline">Delete</span>
                     </button>
                   </div>
                 </div>
@@ -434,7 +435,7 @@ export function Dashboard() {
             <h3 className="text-lg font-semibold text-gray-900 mb-4">
               Edit Notes
             </h3>
-            <p className="text-sm text-gray-600 mb-4 line-clamp-2">
+            <p className="text-sm text-gray-600 mb-4 line-clamp-2 break-words">
               {selectedPaper.title}
             </p>
             <textarea
@@ -480,7 +481,7 @@ export function Dashboard() {
             </p>
             
             <div className="bg-gray-50 border border-gray-200 rounded-lg p-3 mb-6">
-              <p className="text-sm font-medium text-gray-900 line-clamp-2">
+              <p className="text-sm font-medium text-gray-900 line-clamp-2 break-words">
                 {paperToDelete.title}
               </p>
               <p className="text-xs text-gray-500 mt-1">
