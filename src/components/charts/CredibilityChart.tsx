@@ -1,5 +1,5 @@
 import React from 'react';
-import { PieChart, Pie, Cell, ResponsiveContainer, Legend } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 interface CredibilityChartProps {
   score: number;
@@ -7,8 +7,8 @@ interface CredibilityChartProps {
 
 export function CredibilityChart({ score }: CredibilityChartProps) {
   const data = [
-    { name: 'Credible', value: score, color: '#10B981' },
-    { name: 'Remaining', value: 100 - score, color: '#E5E7EB' }
+    { name: 'Credible', value: score },
+    { name: 'Remaining', value: 100 - score }
   ];
 
   const getScoreLabel = (score: number) => {
@@ -20,10 +20,12 @@ export function CredibilityChart({ score }: CredibilityChartProps) {
   };
 
   const getScoreColor = (score: number) => {
-    if (score >= 80) return '#10B981';
-    if (score >= 60) return '#F59E0B';
-    return '#EF4444';
+    if (score >= 80) return '#10B981'; // green-500
+    if (score >= 60) return '#F59E0B'; // amber-500
+    return '#EF4444'; // red-500
   };
+
+  const COLORS = [getScoreColor(score), '#E5E7EB']; // Active color and gray-200
 
   return (
     <div className="relative">
@@ -40,7 +42,7 @@ export function CredibilityChart({ score }: CredibilityChartProps) {
             dataKey="value"
           >
             {data.map((entry, index) => (
-              <Cell key={`cell-${index}`} fill={entry.color} />
+              <Cell key={`cell-${index}`} fill={COLORS[index]} />
             ))}
           </Pie>
         </PieChart>
