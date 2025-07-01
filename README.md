@@ -81,3 +81,5 @@ cd PaperLenz
 ## 🙌 Credits
 Built with passion and purpose by **Sathvigaa Bharathi** 💡📚
 
+🔒 This project is protected under the [MIT License](LICENSE).  
+🛑 Do not copy or claim this work as your own. Educational/demo use only.
